@@ -7,7 +7,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const apiBaseUrl = "https://dbh.hkdir.no/api/Tabeller/hentJSONTabellData";
-const ntnuInstitutionCode = 1150;
+
+const institutionCodes = [
+  1110, // UiO
+  1120, // UiB
+  1130, // UiT
+  1150, // NTNU
+  1160, // UiS
+  1171, // UiA
+];
 
 const createApiRequest = async (
   outFile: string,
@@ -97,8 +105,11 @@ const createQuery = (
 const createStatusQueryFilter = () => createQueryFilter("Status", ["1", "2"]);
 const createLevelQueryFilter = () =>
   createQueryFilter("Nivåkode", ["HN", "LN"]);
-const createInstitutionQueryFilter = (institution: number) =>
-  createQueryFilter("Institusjonskode", [institution.toString()]);
+const createMultipleInstitutionQueryFilter = (institutions: number[]) =>
+  createQueryFilter(
+    "Institusjonskode",
+    institutions.map((code) => code.toString())
+  );
 
 const getDepartmentsQuery = async () =>
   await createApiRequest(
@@ -106,7 +117,7 @@ const getDepartmentsQuery = async () =>
     createQuery(210, {
       sortBy: ["Nivå"],
       filter: [
-        createInstitutionQueryFilter(ntnuInstitutionCode),
+        createMultipleInstitutionQueryFilter(institutionCodes),
         createExclusionFilter("Avdelingskode", ["000000"]),
       ],
     })
@@ -118,7 +129,7 @@ const getSubjectsQuery = async () =>
     createQuery(208, {
       sortBy: ["Årstall", "Institusjonskode", "Avdelingskode"],
       filter: [
-        createInstitutionQueryFilter(ntnuInstitutionCode),
+        createMultipleInstitutionQueryFilter(institutionCodes),
         createLevelQueryFilter(),
         createStatusQueryFilter(),
         createLatestQueryFilter("Årstall"),
@@ -127,7 +138,7 @@ const getSubjectsQuery = async () =>
     })
   );
 
-const getGradesQuery = async () => {
+const getGradesQuery = async () =>
   await createApiRequest(
     "grades.json",
     createQuery(308, {
@@ -139,14 +150,13 @@ const getGradesQuery = async () => {
         "Institusjonskode",
       ],
       filter: [
-        createInstitutionQueryFilter(ntnuInstitutionCode),
+        createMultipleInstitutionQueryFilter(institutionCodes),
         createLatestQueryFilter("Årstall"),
         createQueryAllFilter("Emnekode"),
         createQueryAllFilter("Semester"),
       ],
     })
   );
-};
 
 async function main() {
   console.log("Fetching data from API...");
@@ -248,4 +258,13 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+
+    try {
+      await fs.unlink("departments.json");
+      await fs.unlink("subjects.json");
+      await fs.unlink("grades.json");
+      console.log("Temporary JSON files deleted.");
+    } catch (err) {
+      console.error("Error deleting JSON files:", err);
+    }
   });

@@ -28,7 +28,7 @@ export function SubjectCard({
 }: Props) {
   const instCode = Number.parseInt(institusjonskode || "");
   const institution = institutionMap[
-    instCode as keyof typeof institutionMap
+    instCode as unknown as keyof typeof institutionMap
   ] || {
     name: "Ukjent",
     color: "bg-gray-500",

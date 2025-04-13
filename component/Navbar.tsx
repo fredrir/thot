@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, Menu, X, BookOpen, GraduationCap } from "lucide-react";
+import { Search, Menu, BookOpen, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "./Theme/ThemeToggle";
+import { SearchBar } from "./SearchBar";
 
 export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -70,21 +70,7 @@ export default function Navbar() {
         <div className="ml-auto flex items-center gap-2">
           {searchOpen ? (
             <div className="relative animate-in fade-in slide-in-from-top-4 duration-300">
-              <Input
-                type="search"
-                placeholder="Søk etter emner..."
-                className="w-[200px] sm:w-[300px] pr-8 focus-visible:ring-amber-500"
-                autoFocus
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-full"
-                onClick={() => setSearchOpen(false)}
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">Lukk søk</span>
-              </Button>
+              <SearchBar onClose={() => setSearchOpen(false)} />
             </div>
           ) : (
             <Button

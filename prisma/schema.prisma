@@ -1,15 +1,62 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Department {
+  id                        Int    @id @default(autoincrement())
+  nivo                      String @map("Nivå")
+  nivoTekst                 String @map("Nivå_tekst")
+  institusjonskode          String
+  institusjonsnavn          String
+  avdelingskode             String
+  avdelingsnavn             String
+  gyldigFra                 String @map("Gyldig fra")
+  gyldigTil                 String @map("Gyldig til")
+  fagkodeAvdeling           String @map("fagkode avdeling")
+  fagnavnAvdeling           String @map("fagnavn avdeling")
+  fakultetskode             String
+  fakultetsnavn             String
+  avdelingskode3SisteSiffer String @map("Avdelingskode (3 siste siffer)")
+}
+
+model Subject {
+  id                Int     @id @default(autoincrement())
+  institusjonskode  String
+  institusjonsnavn  String
+  avdelingskode     String
+  avdelingsnavn     String
+  avdelingskodeSSB  String  @map("Avdelingskode_SSB")
+  arstall           String  @map("Årstall")
+  semester          String
+  semesternavn      String
+  studieprogramkode String
+  studieprogramnavn String
+  emnekode          String
+  emnenavn          String
+  nivokode          String  @map("Nivåkode")
+  nivonavn          String  @map("Nivånavn")
+  studiepoeng       String
+  nusKode           String  @map("NUS-kode")
+  status            String
+  statusnavn        String  @map("Statusnavn")
+  undervSprak       String  @map("Underv.språk")
+  navn              String
+  fagkode           String?
+  fagnavn           String?
+  oppgaveNyFraH2012 String? @map("Oppgave (ny fra h2012)")
+}
+
+model Grade {
+  id                     Int    @id @default(autoincrement())
+  arstall                String @map("Årstall")
+  semester               String
+  semesternavn           String
+  karakter               String
+  emnekode               String
+  antallKandidaterTotalt String @map("Antall kandidater totalt")
 }

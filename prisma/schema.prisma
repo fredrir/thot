@@ -58,5 +58,5 @@ model Grade {
   semesternavn           String
   karakter               String
   emnekode               String
-  antallKandidaterTotalt String @map("Antall kandidater totalt")
+  antallKandidaterTotalt Int    @map("Antall kandidater totalt")
 }

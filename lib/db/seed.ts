@@ -221,7 +221,7 @@ async function main() {
     semesternavn: gr["Semesternavn"],
     karakter: gr["Karakter"],
     emnekode: gr["Emnekode"],
-    antallKandidaterTotalt: gr["Antall kandidater totalt"],
+    antallKandidaterTotalt: parseInt(gr["Antall kandidater totalt"] ?? "0", 10),
   }));
 
   console.log("Seeding data into the database...");

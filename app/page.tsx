@@ -1,3 +1,4 @@
+import { SubjectCard } from "@/component/Home/SubjectCard";
 import getPopularSubjects from "@/lib/actions/getPopularSubjects";
 
 export default async function Home() {
@@ -15,13 +16,12 @@ export default async function Home() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {popularSubjects.map((subject) => (
-          <div
+          <SubjectCard
             key={subject.emnekode}
-            className="rounded-lg border bg-card p-6 shadow-sm"
-          >
-            <h3 className="text-xl font-semibold">{subject.emnekode}</h3>
-            <p className="text-muted-foreground mt-2">{subject.emnenavn}</p>
-          </div>
+            emnekode={subject.emnekode}
+            emnenavn={subject.emnenavn}
+            institusjonskode={subject.institusjonskode}
+          />
         ))}
       </div>
     </div>

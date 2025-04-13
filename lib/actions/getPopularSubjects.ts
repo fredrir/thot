@@ -28,6 +28,7 @@ export default async function getPopularSubjects() {
             emnenavn: true,
             studiepoeng: true,
             institusjonsnavn: true,
+            institusjonskode: true,
             avdelingsnavn: true,
           },
         });

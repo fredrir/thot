@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/component/Theme/ThemeProvider";
-import Navbar from "@/component/Navbar";
+import { ThemeProvider } from "@/components/Theme/ThemeProvider";
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="no" suppressHydrationWarning>
-      <body className={`${inter.className}  antialiased`}>
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -26,10 +26,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ThemeProvider />
-          <div className="container mx-auto px-4">
-            <Navbar />
-            {children}
-          </div>
+          <Navbar />
+
+          {children}
         </ThemeProvider>
       </body>
     </html>

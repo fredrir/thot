@@ -7,56 +7,104 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model University {
+  id          String       @id
+  name        String
+  shortName   String
+  departments Department[]
+
+  @@map("universities")
+}
+
 model Department {
-  id                        Int    @id @default(autoincrement())
-  nivo                      String @map("Nivå")
-  nivoTekst                 String @map("Nivå_tekst")
-  institusjonskode          String
-  institusjonsnavn          String
-  avdelingskode             String
-  avdelingsnavn             String
-  gyldigFra                 String @map("Gyldig fra")
-  gyldigTil                 String @map("Gyldig til")
-  fagkodeAvdeling           String @map("fagkode avdeling")
-  fagnavnAvdeling           String @map("fagnavn avdeling")
-  fakultetskode             String
-  fakultetsnavn             String
-  avdelingskode3SisteSiffer String @map("Avdelingskode (3 siste siffer)")
+  id           String     @id
+  name         String
+  subjects     Subject[]
+  university   University @relation(fields: [universityId], references: [id])
+  universityId String
+
+  @@map("departments")
 }
 
 model Subject {
-  id                Int     @id @default(autoincrement())
-  institusjonskode  String
-  institusjonsnavn  String
-  avdelingskode     String
-  avdelingsnavn     String
-  avdelingskodeSSB  String  @map("Avdelingskode_SSB")
-  arstall           String  @map("Årstall")
-  semester          String
-  semesternavn      String
-  studieprogramkode String
-  studieprogramnavn String
-  emnekode          String
-  emnenavn          String
-  nivokode          String  @map("Nivåkode")
-  nivonavn          String  @map("Nivånavn")
-  studiepoeng       String
-  nusKode           String  @map("NUS-kode")
-  status            String
-  statusnavn        String  @map("Statusnavn")
-  undervSprak       String  @map("Underv.språk")
-  navn              String
-  fagkode           String?
-  fagnavn           String?
-  oppgaveNyFraH2012 String? @map("Oppgave (ny fra h2012)")
+  id             String                 @id
+  instituteId    String
+  name           String
+  language       String
+  level          String
+  studyPoints    Float
+  courseContent  String?
+  learningGoals  String?
+  learningForm   String?
+  studyLevel     Int?
+  placeOfStudy   String?
+  taughtInSpring Boolean?
+  taughtInAutumn Boolean?
+  department     Department             @relation(fields: [instituteId], references: [id])
+  grades         SubjectSemesterGrade[]
+  aliases        Alias[]
+  favorites      Favorite[]
+  reviews        Review[]
+
+  @@map("subjects")
 }
 
-model Grade {
-  id                     Int    @id @default(autoincrement())
-  arstall                String @map("Årstall")
-  semester               String
-  semesternavn           String
-  karakter               String
-  emnekode               String
-  antallKandidaterTotalt Int    @map("Antall kandidater totalt")
+model SubjectSemesterGrade {
+  id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subjectId         String
+  year              Int
+  semester          Int
+  gradeA            Int?
+  gradeB            Int?
+  gradeC            Int?
+  gradeD            Int?
+  gradeE            Int?
+  gradeF            Int?
+  gradePass         Int?
+  gradeFail         Int?
+  participantsTotal Int
+  subject           Subject @relation(fields: [subjectId], references: [id])
+
+  @@map("subject_semester_grades")
+}
+
+model User {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username  String     @unique
+  password  String
+  favorites Favorite[]
+  reviews   Review[]
+
+  @@map("users")
+}
+
+model Alias {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subjectId String
+  alias     String
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  @@map("aliases")
+}
+
+model Favorite {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String  @db.Uuid
+  subjectId String
+  user      User    @relation(fields: [userId], references: [id])
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  @@map("favorites")
+}
+
+model Review {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String   @db.Uuid
+  subjectId      String
+  message        String
+  submissionDate DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+  subject        Subject  @relation(fields: [subjectId], references: [id])
+
+  @@map("reviews")
 }

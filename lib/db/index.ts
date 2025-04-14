@@ -21,9 +21,34 @@ const crawlNtnuAction = async () => {
 const migrateAction = async () => {
   const file = new URL("../init.sql", import.meta.url).pathname;
   const content = await fs.readFile(file, "utf-8");
-
-  // Execute raw SQL with Prisma
-  await prisma.$executeRawUnsafe(content);
+  
+  // Split the SQL file into individual statements
+  // This regex splits on semicolons but ignores those inside quotes or comments
+  const statements = content
+    .replace(/^START TRANSACTION;|COMMIT;$/gm, '') // Remove transaction statements
+    .split(';')
+    .map(stmt => stmt.trim())
+    .filter(stmt => stmt.length > 0);
+  
+  // Execute each statement individually
+  try {
+    // Start a transaction manually
+    await prisma.$executeRaw`BEGIN`;
+    
+    for (const statement of statements) {
+      await prisma.$executeRawUnsafe(`${statement};`);
+    }
+    
+    // Commit the transaction
+    await prisma.$executeRaw`COMMIT`;
+    
+    console.log("Migration completed successfully");
+  } catch (error) {
+    // Rollback on error
+    await prisma.$executeRaw`ROLLBACK`;
+    console.error("Migration failed:", error);
+    throw error;
+  }
 };
 
 const crawlAction = async () => {

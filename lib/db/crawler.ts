@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Department, Grade, Subject } from "./client.js";
 import fs from "node:fs/promises";
 
+
 const registerLevelTwoInstitution = async (
   institution: Department,
   db: PrismaClient
@@ -106,6 +107,9 @@ export const registerInstitutions = async (db: PrismaClient) => {
 };
 
 const registerSubject = async (subject: Subject, db: PrismaClient) => {
+
+  console.log(`*SUBJECT * ${subject.Emnenavn}`);
+
   const match = await db.subject.findUnique({
     where: { id: subject.Emnekode },
   });
@@ -136,17 +140,24 @@ const registerSubject = async (subject: Subject, db: PrismaClient) => {
       instituteId: department.id,
     },
   });
+  
 };
 
 export const registerSubjects = async (db: PrismaClient) => {
   const json = await fs.readFile("./subjects.json", "utf-8");
   const subjects = JSON.parse(json) as Subject[];
+  
+
   for (const subject of subjects) {
+    console.log(`** Crawling data for ${subject.Emnenavn}`);
     await registerSubject(subject, db);
   }
 };
 
 const registerGrade = async (grade: Grade, db: PrismaClient) => {
+
+  console.log(`*GRADE * ${grade.Emnekode} ${grade.Årstall} ${grade.Semester}`);
+
   const matchingSubject = await db.subject.findUnique({
     where: { id: grade.Emnekode },
   });
@@ -200,7 +211,9 @@ const registerGrade = async (grade: Grade, db: PrismaClient) => {
 export const registerGrades = async (db: PrismaClient) => {
   const json = await fs.readFile("./grades.json", "utf-8");
   const grades = JSON.parse(json) as Grade[];
+  
   for (const grade of grades) {
+    console.log(`** Crawling data for ${grade.Emnekode}`);
     await registerGrade(grade, db);
   }
 };

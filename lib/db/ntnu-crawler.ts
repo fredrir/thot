@@ -26,6 +26,7 @@ function parseCardContentByTitle(
   const cardBody = cheerio(factsCard).find("div.card-body");
   const contentText = cheerio(cardBody).text();
 
+  //@ts-expect-error
   const searchPattern = /(?<name>\S.*):\s+(?<value>.*)/g;
   const results = [...contentText.matchAll(searchPattern)];
 

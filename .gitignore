@@ -10,7 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
-/crawler/node_modules
+departments.json
+grades.json
+subjects.json
+
+
 
 # testing
 /coverage

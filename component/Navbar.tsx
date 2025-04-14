@@ -33,7 +33,7 @@ export default function Navbar() {
           : "bg-background/80"
       }`}
     >
-      <div className="container flex h-16 items-center">
+      <div className="container mx-auto px-4 flex h-16 items-center">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -123,7 +123,7 @@ export default function Navbar() {
 
         <div className="ml-auto flex items-center gap-2">
           {searchOpen ? (
-            <div className="relative animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="relative animate-in fade-in slide-in-from-right-4 duration-300">
               <SearchBar onClose={() => setSearchOpen(false)} />
             </div>
           ) : (

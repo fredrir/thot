@@ -1,10 +1,10 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface GradeDistributionChartProps {
@@ -22,11 +22,14 @@ interface GradeDistributionChartProps {
     gradeFail?: number | null
     participantsTotal: number
   }>
-  selectedSemester: string
-  onSemesterChange: (value: string) => void
+  initialSemester: string
 }
 
-export function GradeDistributionChart({ grades, selectedSemester, onSemesterChange }: GradeDistributionChartProps) {
+export function GradeDistributionChart({ grades, initialSemester }: GradeDistributionChartProps) {
+
+      const [selectedSemester, setSelectedSemester] = useState(initialSemester)
+
+
   const semesterOptions = useMemo(() => {
     return grades.map((grade) => ({
       value: `${grade.year}-${grade.semester}`,
@@ -44,7 +47,6 @@ export function GradeDistributionChart({ grades, selectedSemester, onSemesterCha
   const chartData = useMemo(() => {
     if (!selectedGradeData) return []
     
-    // Check if we have letter grades or pass/fail
     const hasLetterGrades = selectedGradeData.gradeA !== null || 
                            selectedGradeData.gradeB !== null || 
                            selectedGradeData.gradeC !== null
@@ -97,7 +99,7 @@ export function GradeDistributionChart({ grades, selectedSemester, onSemesterCha
               'Select a semester to view grade distribution'}
           </CardDescription>
         </div>
-        <Select value={selectedSemester} onValueChange={onSemesterChange}>
+        <Select value={selectedSemester} onValueChange={setSelectedSemester}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select semester" />
           </SelectTrigger>

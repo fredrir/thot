@@ -1,4 +1,4 @@
-import { ClientWrapper } from "@/component/Emne/ClientWrapper"
+import { GradeDistributionChart } from "@/component/Emne/GradeDistributionChart"
 import { GradeStatisticsCards } from "@/component/Emne/GradeStatisticsCards"
 import { GradeTimelineChart } from "@/component/Emne/GradeTimelineChart"
 import { SubjectHeader } from "@/component/Emne/SubjectHeader"
@@ -60,7 +60,10 @@ export default async function EmnePage(props: { params: tParams }) {
     return b.semester - a.semester
   })
 
-  const initialSemester = sortedGrades.length > 0 ? `${sortedGrades[0].year}-${sortedGrades[0].semester}` : ""
+const filteredGrades = sortedGrades.filter((grade) => grade.participantsTotal > 0)
+const initialSemester = filteredGrades.length > 0 ? `${filteredGrades[0].year}-${filteredGrades[0].semester}` : ""
+
+
 
   return (
     <main className="container py-6">
@@ -69,17 +72,17 @@ export default async function EmnePage(props: { params: tParams }) {
       
     <div className="grid grid-cols-9 gap-8">
       <div className="col-span-7">
-        <ClientWrapper grades={emne.grades} initialSemester={initialSemester} />
+        <GradeDistributionChart grades={filteredGrades} initialSemester={initialSemester} />
       </div>
 
 
       <div className="col-span-2 flex flex-col gap-8">
-        <GradeStatisticsCards grades={emne.grades} />
+        <GradeStatisticsCards grades={filteredGrades} />
       </div>
       </div>
 
       <div className="mt-6">
-        <GradeTimelineChart grades={emne.grades} />
+        <GradeTimelineChart grades={filteredGrades} />
       </div>
     </main>
   )

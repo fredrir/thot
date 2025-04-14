@@ -21,8 +21,8 @@ import { SearchBar } from "./SearchBar";
 import Image from "next/image";
 
 const navLinks = [
-  { href: "/emner", label: "Emner", icon: BookOpen },
-  { href: "/om", label: "Om Thot", icon: GraduationCap },
+  { href: "emner", label: "Emner", icon: BookOpen },
+  { href: "om", label: "Om Thot", icon: GraduationCap },
 ];
 
 export default function Navbar() {

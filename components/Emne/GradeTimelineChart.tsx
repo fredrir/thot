@@ -107,7 +107,7 @@ export function GradeTimelineChart({ grades }: GradeTimelineChartProps) {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="distribution">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex flex-wrap">
             <TabsTrigger value="passRate">Pass Rate</TabsTrigger>
             {hasLetterGrades && (
               <TabsTrigger value="distribution">Grade Distribution</TabsTrigger>
@@ -115,7 +115,7 @@ export function GradeTimelineChart({ grades }: GradeTimelineChartProps) {
             <TabsTrigger value="participants">Participants</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="passRate" className="h-[300px]">
+          <TabsContent value="passRate" className="">
             <ChartContainer
               config={{
                 passRate: {

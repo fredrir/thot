@@ -76,7 +76,7 @@ export default async function EmnePage(props: { params: tParams }) {
           />
         </div>
 
-        <div className="col-span-1 flex flex-col gap-8 md:col-span-2">
+        <div className="col-span-1 grid grid-cols-2 gap-8 md:col-span-2 md:grid-cols-1">
           <GradeStatisticsCards grades={filteredGrades} />
         </div>
       </div>

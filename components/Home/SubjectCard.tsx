@@ -70,8 +70,7 @@ export function SubjectCard({ emnekode, emnenavn, institusjonskode, className }:
           </div>
         </CardFooter>
 
-        {/* Book texture overlay */}
-        <div className="absolute inset-0 bg-[url('/aged-parchment.png')] opacity-20 dark:opacity-10 pointer-events-none mix-blend-overlay" />
+
       </Card>
     </Link>
   )

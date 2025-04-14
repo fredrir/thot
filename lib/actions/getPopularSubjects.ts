@@ -25,14 +25,11 @@ export default async function getPopularSubjects() {
 
       const subjects = await prisma.subject.findMany({
         where: { instituteId: { in: departmentIds } },
-        include: {
-          department: {
-            select: {
-              universityId: true,
-              university: true,
-            },
-          },
-          grades: true,
+        select: {
+          id: true,
+          name: true,
+          department: { select: { universityId: true } },
+          grades: { select: { participantsTotal: true } },
         },
       });
 

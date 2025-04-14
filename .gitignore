@@ -10,6 +10,10 @@
 !.yarn/releases
 !.yarn/versions
 
+departments.json
+grades.json
+subjects.json
+
 # testing
 /coverage
 

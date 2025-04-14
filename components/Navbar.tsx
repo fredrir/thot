@@ -97,11 +97,7 @@ export default function Navbar() {
 
         <Link href="/" className="group mr-6 flex items-center gap-2">
           <div
-            className={`relative overflow-hidden rounded-lg transition-all duration-300 ${
-              scrolled
-                ? "bg-gradient-to-br from-amber-500 to-amber-700"
-                : "bg-amber-600"
-            } p-2 shadow-md group-hover:shadow-amber-300/30 dark:group-hover:shadow-amber-700/30`}
+            className={`relative overflow-hidden rounded-lg p-2 transition-all duration-300 group-hover:shadow-amber-300/30 dark:group-hover:shadow-amber-700/30`}
           >
             <Image
               src={"/thot.svg"}
@@ -113,11 +109,7 @@ export default function Navbar() {
             <div className="absolute inset-0 translate-y-full bg-gradient-to-r from-amber-400 to-amber-600 transition-transform duration-300 ease-out group-hover:translate-y-0"></div>
           </div>
           <span
-            className={`hidden text-xl font-bold transition-all duration-300 sm:inline-block ${
-              scrolled
-                ? "bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent"
-                : "text-amber-600 dark:text-amber-500"
-            } group-hover:bg-gradient-to-r group-hover:from-amber-500 group-hover:to-amber-700 group-hover:bg-clip-text group-hover:text-transparent`}
+            className={`text-transparent" hidden bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-xl font-bold transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-amber-500 group-hover:to-amber-700 group-hover:bg-clip-text group-hover:text-transparent sm:inline-block`}
           >
             Thot
           </span>

@@ -2,49 +2,47 @@ import { Grade, Subject } from "./client.js";
 import fs from "node:fs/promises";
 import prisma from "./db.js";
 
-const registerSubject = async (subject: Subject) => {
-  console.log(`*SUBJECT * ${subject.Emnenavn}`);
-
-  const match = await prisma.subject.findUnique({
-    where: { id: subject.Emnekode },
-  });
-
-  const department = await prisma.department.findUnique({
-    where: { id: subject.Avdelingskode },
-  });
-
-  if (!department) {
-    throw new Error(
-      `Did not find matching department for ${
-        subject.Emnekode
-      }: ${JSON.stringify(subject)}`,
-    );
-  }
-
-  if (match !== null) {
-    return;
-  }
-
-  await prisma.subject.create({
-    data: {
-      id: subject.Emnekode,
-      name: subject.Emnenavn,
-      level: subject.Nivåkode,
-      language: subject["Underv.språk"],
-      studyPoints: parseFloat(subject.Studiepoeng),
-      instituteId: department.id,
-    },
-  });
-};
-
 export const registerSubjects = async () => {
   const json = await fs.readFile("./subjects.json", "utf-8");
   const subjects = JSON.parse(json) as Subject[];
 
+  const uniqueSubjects = new Map<string, Subject>();
+
   for (const subject of subjects) {
-    console.log(`** Crawling data for ${subject.Emnenavn}`);
-    await registerSubject(subject);
+    if (!uniqueSubjects.has(subject.Emnekode)) {
+      uniqueSubjects.set(subject.Emnekode, subject);
+    }
   }
+
+  const uniqueSubjectsArray = Array.from(uniqueSubjects.values());
+
+  const existingSubjects = await prisma.subject.findMany({
+    where: {
+      id: {
+        in: uniqueSubjectsArray.map((subject) => subject.Emnekode),
+      },
+    },
+  });
+
+  const uniqueAndNotExistingSubjects = uniqueSubjectsArray.filter(
+    (subject) =>
+      !existingSubjects.some((existingSubject) => {
+        return existingSubject.id === subject.Emnekode;
+      }),
+  );
+
+  const prismaArray = uniqueAndNotExistingSubjects.map((subject) => ({
+    id: subject.Emnekode,
+    name: subject.Emnenavn,
+    level: subject.Nivåkode,
+    language: subject["Underv.språk"],
+    studyPoints: parseFloat(subject.Studiepoeng),
+    instituteId: subject.Avdelingskode,
+  }));
+
+  await prisma.subject.createMany({
+    data: prismaArray,
+  });
 };
 
 const registerGrade = async (grade: Grade) => {

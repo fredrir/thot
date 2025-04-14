@@ -2,48 +2,6 @@ import { Department } from "./client.js";
 import fs from "node:fs/promises";
 import prisma from "./db.js";
 
-const registerLevelThreeInstitution = async (institution: Department) => {
-  const match = await prisma.department.findUnique({
-    where: { id: institution.Avdelingskode },
-  });
-
-  const university = await prisma.university.findUnique({
-    where: { id: institution.Institusjonskode },
-  });
-
-  if (!university) {
-    throw new Error(
-      `Did not find matching university for ${
-        institution.Avdelingskode
-      }: ${JSON.stringify(institution)}`,
-    );
-  }
-
-  if (match !== null) {
-    if (
-      match.name !== institution.Avdelingsnavn ||
-      match.universityId !== institution.Institusjonskode
-    ) {
-      await prisma.department.update({
-        where: { id: institution.Avdelingskode },
-        data: {
-          name: institution.Avdelingsnavn,
-          universityId: university.id,
-        },
-      });
-    }
-    return;
-  }
-
-  await prisma.department.create({
-    data: {
-      id: institution.Avdelingskode,
-      name: institution.Avdelingsnavn,
-      universityId: university.id,
-    },
-  });
-};
-
 export const registerDepartments = async () => {
   console.log(`** Crawling data for faculties and departments`);
   const json = await fs.readFile("./departments.json", "utf-8");
@@ -53,23 +11,42 @@ export const registerDepartments = async () => {
   // We must sort such that Nivå 2 departments are registered before Nivå 3
   // because Nivå 3 depends on Nivå 2 being registered.
   institutions.sort((a, b) => a.Nivå.localeCompare(b.Nivå));
-  for (const institution of institutions) {
-    console.log(`* Fetching ${institution.Avdelingsnavn}`);
-    switch (institution.Nivå) {
-      case "2":
-        // Register 000-code institute
-        await registerLevelThreeInstitution(institution);
-        break;
-      case "3":
-        await registerLevelThreeInstitution(institution);
-        break;
-      default:
-        throw new Error(
-          `Failed to register institution with level ${
-            institution.Nivå
-          }: ${JSON.stringify(institution)}`,
-        );
+
+  const filteredInstitutions = institutions.filter(
+    (institution) => institution.Nivå === "2" || institution.Nivå === "3",
+  );
+  const uniqueDepartments = new Map<string, Department>();
+  const existingDepartments = await prisma.department.findMany({
+    where: {
+      id: {
+        in: filteredInstitutions.map(
+          (institution) => institution.Avdelingskode,
+        ),
+      },
+    },
+  });
+  for (const institution of filteredInstitutions) {
+    if (!uniqueDepartments.has(institution.Avdelingskode)) {
+      uniqueDepartments.set(institution.Avdelingskode, institution);
     }
   }
-  console.groupEnd();
+  const uniqueDepartmentsArray = Array.from(uniqueDepartments.values());
+  const uniqueAndNotExistingInstitutions = uniqueDepartmentsArray.filter(
+    (department) =>
+      !existingDepartments.some((existingDepartment) => {
+        return (
+          existingDepartment.id === department.Avdelingskode &&
+          existingDepartment.universityId === department.Institusjonskode
+        );
+      }),
+  );
+
+  await prisma.department.createMany({
+    data: uniqueAndNotExistingInstitutions.map((institution) => ({
+      id: institution.Avdelingskode,
+      name: institution.Avdelingsnavn,
+      universityId: institution.Institusjonskode,
+    })),
+    skipDuplicates: true,
+  });
 };

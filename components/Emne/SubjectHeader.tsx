@@ -9,11 +9,8 @@ interface SubjectHeaderProps {
     studyPoints: number
     department: {
       name: string
-      faculty: {
+      university: {
         name: string
-        university: {
-          name: string
-        }
       }
     }
   }
@@ -27,7 +24,7 @@ export function SubjectHeader({ subject }: SubjectHeaderProps) {
           {subject.id} - {subject.name}
         </CardTitle>
         <CardDescription>
-          {subject.department.name}, {subject.department.faculty.name}, {subject.department.faculty.university.name}
+          {subject.department.name},, {subject.department.university.name}
         </CardDescription>
       </CardHeader>
       <CardContent>

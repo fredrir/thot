@@ -84,47 +84,16 @@ export default async function fetchUniversity() {
         console.log(`Updated university: ${university.name}`)
       }
     })
-
-
-    const faculties = await prisma.faculty.findMany()
-
-    
-    const facultyToUniMap = new Map()
-
-    departmentsData.forEach((dept: DepartmentData) => {
-      const facultyCode = dept.Fakultetskode
-      const uniCode = dept.Institusjonskode
-
-      console.log(uniCode)
-
-      if (facultyCode && uniCode) {
-        facultyToUniMap.set(facultyCode, uniCode)
-      }
-    })
-
-    for (const faculty of faculties) {
-      const facultyCode = faculty.id
-      const uniCode = facultyToUniMap.get(facultyCode)
-
-      if (uniCode) {
-        await prisma.faculty.update({
-          where: { id: faculty.id },
-          data: { universityId: uniCode },
-        })
-        console.log(`Updated faculty ${faculty.id} with university ${uniCode}`)
-      } else {
-        console.log(`Could not find university for faculty ${faculty.id}`)
-      }
-    }
     
     const departments = await prisma.department.findMany()
     const departmentToFacultyMap = new Map()
     departmentsData.forEach((dept: DepartmentData) => {
-      const facultyCode = dept.Fakultetskode
+
+      const avdelingsKode = dept.Avdelingskode
       const uniCode = dept.Institusjonskode
-      if (facultyCode && uniCode ) {
-        departmentToFacultyMap.set(uniCode, {
-          facultyCode,
+      if (avdelingsKode && uniCode ) {
+        departmentToFacultyMap.set(avdelingsKode, {
+          avdelingsKode,
           uniCode,
         })
       }
@@ -137,7 +106,6 @@ export default async function fetchUniversity() {
           where: { id: department.id },
           data: {
             universityId: departmentInfo.uniCode,
-            name: departmentInfo.departmentName,
           },
         })
         console.log(`Updated department ${department.id} with university ${departmentInfo.uniCode}`)

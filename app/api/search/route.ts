@@ -18,17 +18,13 @@ export async function GET(request: Request) {
           { id: { contains: query, mode: "insensitive" } },
         ], 
       },include: {
-        department: {
-          include: {
-            faculty: true,
-            }
-          }
+        department: true,
       },
       take: 20,
     });
 
     const formattedSubjects = subjects.map((subject) => {
-      const institutionCode = subject.department.faculty.universityId;
+      const institutionCode = subject.department.universityId;
       const university = institutionMap[
         institutionCode as keyof typeof institutionMap
       ] || {

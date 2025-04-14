@@ -33,7 +33,7 @@ export function SubjectCard({ emnekode, emnenavn, institusjonskode, className }:
 
         <div className="absolute right-0 top-4 bottom-4 w-2 bg-gradient-to-l from-stone-300 to-transparent dark:from-stone-700" />
 
-        <CardHeader className="pb-2 relative z-10 pl-10">
+        <CardHeader className="pb-2 relative  pl-10">
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
               <CardTitle className="text-2xl font-black tracking-tight uppercase text-stone-800 dark:text-stone-200">
@@ -56,7 +56,7 @@ export function SubjectCard({ emnekode, emnenavn, institusjonskode, className }:
           </CardDescription>
         </CardHeader>
 
-        <CardFooter className="pt-0 pb-4 flex justify-between items-center relative z-10 pl-10">
+        <CardFooter className="pt-0 pb-4 flex justify-between items-center relative  pl-10">
           <div className="flex items-center text-sm font-bold text-stone-700 dark:text-stone-400">
             <GraduationCap className="mr-2 h-4 w-4" />
             <span className="uppercase text-xs tracking-wide">Se karakterstatistikk</span>

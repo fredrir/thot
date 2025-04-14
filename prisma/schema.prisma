@@ -11,28 +11,17 @@ model University {
   id          String       @id
   name        String
   shortName   String
-  faculties   Faculty[]
   departments Department[]
-}
 
-model Faculty {
-  id           String       @id
-  name         String
-  departments  Department[]
-  University   University   @relation(fields: [universityId], references: [id])
-  universityId String
-
-  @@map("faculties")
+  @@map("universities")
 }
 
 model Department {
-  id           String      @id
-  facultyId    String
+  id           String     @id
   name         String
-  faculty      Faculty     @relation(fields: [facultyId], references: [id])
   subjects     Subject[]
-  University   University? @relation(fields: [universityId], references: [id])
-  universityId String?
+  university   University @relation(fields: [universityId], references: [id])
+  universityId String
 
   @@map("departments")
 }

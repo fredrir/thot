@@ -27,10 +27,10 @@ export default function RootLayout({
         >
           <ThemeProvider />
           <Navbar />
-          <div className="container mx-auto px-4">
+        
             
             {children}
-          </div>
+          
         </ThemeProvider>
       </body>
     </html>

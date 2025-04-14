@@ -40,11 +40,7 @@ export default async function EmnePage(props: { params: tParams }) {
     include: {
       department: {
         include: {
-          faculty: {
-            include: {
-              university: true,
-            },
-          },
+          university: true,
         },
       },
       grades: true,

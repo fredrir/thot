@@ -2,7 +2,7 @@ import { GradeDistributionChart } from "@/components/Emne/GradeDistributionChart
 import { GradeStatisticsCards } from "@/components/Emne/GradeStatisticsCards";
 import { GradeTimelineChart } from "@/components/Emne/GradeTimelineChart";
 import { SubjectHeader } from "@/components/Emne/SubjectHeader";
-import { prisma } from "@/lib/db/db";
+import prisma from "@/lib/db/db";
 import { tParams } from "@/lib/types";
 import type { Metadata } from "next";
 

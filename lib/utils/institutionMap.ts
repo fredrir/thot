@@ -5,4 +5,5 @@ export const institutionMap = {
   "1150": { name: "NTNU", color: "bg-emerald-500" },
   "1160": { name: "UiS", color: "bg-amber-500" },
   "1171": { name: "UiA", color: "bg-cyan-500" },
+  "1240": { name: "NHH", color: "bg-rose-500" },
 };

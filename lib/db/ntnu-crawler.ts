@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import cheerio from "cheerio";
 import PQueue from "p-queue";
+import prisma from "./db";
 
 interface NTNUSubjectMetadata {
   courseContent: string | null;
@@ -123,8 +123,8 @@ async function crawlSubjectMetadata(
   return parseSubjectCardInfo($);
 }
 
-export const crawlNTNU = async (db: PrismaClient) => {
-  const subjects = await db.subject.findMany({
+export const crawlNTNU = async () => {
+  const subjects = await prisma.subject.findMany({
     select: { id: true },
   });
 
@@ -140,7 +140,7 @@ export const crawlNTNU = async (db: PrismaClient) => {
         taughtInSpring: null,
         placeOfStudy: null,
       };
-      await db.subject.update({
+      await prisma.subject.update({
         where: { id: subject.id },
         data: {
           courseContent: metadata.courseContent,

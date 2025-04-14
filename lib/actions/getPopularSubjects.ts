@@ -1,4 +1,4 @@
-import { prisma } from "../db/db";
+import prisma from "../db/db";
 
 /**
  * Returns a single list of Subject objects (3 per university),

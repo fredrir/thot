@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import process from "node:process";
 import fs from "node:fs/promises";
-import { prisma } from "./db.js";
+import prisma from "./db.js";
 import {
   getDepartmentsQuery,
   getGradesQuery,
@@ -9,12 +9,13 @@ import {
 } from "./client.js";
 
 import { crawlNTNU } from "./ntnu-crawler.js";
-import fetchUniversity from "./universitiesAndDepartments.js";
-import registerUniversityAndDepartments from "./universitiesAndDepartments.js";
+import fetchUniversity from "./registerUniversities.js";
 import { registerGrades, registerSubjects } from "./subjectsAndGrades.js";
+import registerUniversities from "./registerUniversities.js";
+import { registerDepartments } from "./registerDepartments.js";
 
 const crawlNtnuAction = async () => {
-  await crawlNTNU(prisma);
+  await crawlNTNU();
 };
 
 const migrateAction = async () => {
@@ -58,9 +59,10 @@ const crawlAction = async () => {
 };
 
 const populateAction = async () => {
-  await registerUniversityAndDepartments(prisma);
-  await registerSubjects(prisma);
-  await registerGrades(prisma);
+  await registerUniversities();
+  await registerDepartments();
+  await registerSubjects();
+  await registerGrades();
 };
 
 const program = new Command("crawler");

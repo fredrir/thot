@@ -1,15 +1,15 @@
-import { PrismaClient } from "@prisma/client";
 import { Grade, Subject } from "./client.js";
 import fs from "node:fs/promises";
+import prisma from "./db.js";
 
-const registerSubject = async (subject: Subject, db: PrismaClient) => {
+const registerSubject = async (subject: Subject) => {
   console.log(`*SUBJECT * ${subject.Emnenavn}`);
 
-  const match = await db.subject.findUnique({
+  const match = await prisma.subject.findUnique({
     where: { id: subject.Emnekode },
   });
 
-  const department = await db.department.findUnique({
+  const department = await prisma.department.findUnique({
     where: { id: subject.Avdelingskode },
   });
 
@@ -25,7 +25,7 @@ const registerSubject = async (subject: Subject, db: PrismaClient) => {
     return;
   }
 
-  await db.subject.create({
+  await prisma.subject.create({
     data: {
       id: subject.Emnekode,
       name: subject.Emnenavn,
@@ -37,20 +37,20 @@ const registerSubject = async (subject: Subject, db: PrismaClient) => {
   });
 };
 
-export const registerSubjects = async (db: PrismaClient) => {
+export const registerSubjects = async () => {
   const json = await fs.readFile("./subjects.json", "utf-8");
   const subjects = JSON.parse(json) as Subject[];
 
   for (const subject of subjects) {
     console.log(`** Crawling data for ${subject.Emnenavn}`);
-    await registerSubject(subject, db);
+    await registerSubject(subject);
   }
 };
 
-const registerGrade = async (grade: Grade, db: PrismaClient) => {
+const registerGrade = async (grade: Grade) => {
   console.log(`*GRADE * ${grade.Emnekode} ${grade.Årstall} ${grade.Semester}`);
 
-  const matchingSubject = await db.subject.findUnique({
+  const matchingSubject = await prisma.subject.findUnique({
     where: { id: grade.Emnekode },
   });
 
@@ -58,7 +58,7 @@ const registerGrade = async (grade: Grade, db: PrismaClient) => {
     return;
   }
 
-  let match = await db.subjectSemesterGrade.findFirst({
+  let match = await prisma.subjectSemesterGrade.findFirst({
     where: {
       year: parseInt(grade.Årstall),
       semester: parseInt(grade.Semester),
@@ -67,7 +67,7 @@ const registerGrade = async (grade: Grade, db: PrismaClient) => {
   });
 
   if (match === null) {
-    match = await db.subjectSemesterGrade.create({
+    match = await prisma.subjectSemesterGrade.create({
       data: {
         subjectId: grade.Emnekode,
         semester: parseInt(grade.Semester),
@@ -88,7 +88,7 @@ const registerGrade = async (grade: Grade, db: PrismaClient) => {
     H: "gradeFail",
   };
 
-  await db.subjectSemesterGrade.update({
+  await prisma.subjectSemesterGrade.update({
     where: { id: match.id },
     data: {
       [gradeKeyMap[grade.Karakter]]: parseInt(
@@ -100,12 +100,12 @@ const registerGrade = async (grade: Grade, db: PrismaClient) => {
   });
 };
 
-export const registerGrades = async (db: PrismaClient) => {
+export const registerGrades = async () => {
   const json = await fs.readFile("./grades.json", "utf-8");
   const grades = JSON.parse(json) as Grade[];
 
   for (const grade of grades) {
     console.log(`** Crawling data for ${grade.Emnekode}`);
-    await registerGrade(grade, db);
+    await registerGrade(grade);
   }
 };

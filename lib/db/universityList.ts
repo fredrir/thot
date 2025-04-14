@@ -29,4 +29,9 @@ export const universityList = [
     name: "Universitetet i Agder",
     shortName: "UiA",
   },
+  {
+    id: "1240",
+    name: "Norges handelshøyskole",
+    shortName: "NHH",
+  },
 ];

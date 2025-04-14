@@ -1,16 +1,8 @@
 import { Readable } from "stream";
 import fs from "node:fs";
+import { universityList } from "./universityList";
 
 const apiBaseUrl = "https://dbh.hkdir.no/api/Tabeller/hentJSONTabellData";
-
-const institutionCodes = [
-  1110, // UiO
-  1120, // UiB
-  1130, // UiT
-  1150, // NTNU
-  1160, // UiS
-  1171, // UiA
-];
 
 export enum Semester {
   WINTER = 0,
@@ -107,7 +99,7 @@ const createQuery = (
 const createStatusQueryFilter = () => createQueryFilter("Status", ["1", "2"]);
 const createLevelQueryFilter = () =>
   createQueryFilter("Nivåkode", ["HN", "LN"]);
-const createMultipleInstitutionQueryFilter = (institutions: number[]) =>
+const createMultipleInstitutionQueryFilter = (institutions: string[]) =>
   createQueryFilter(
     "Institusjonskode",
     institutions.map((code) => code.toString()),
@@ -128,6 +120,8 @@ export type Department = {
   Fakultetsnavn: string;
   "Avdelingskode (3 siste siffer)": string;
 };
+
+const institutionCodes = universityList.map((university) => university.id);
 
 export const getDepartmentsQuery = async () =>
   await createApiRequest(

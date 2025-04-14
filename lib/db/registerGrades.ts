@@ -1,53 +1,6 @@
-import { Grade, Subject } from "./client.js";
+import { Grade } from "./client";
+import prisma from "./db";
 import fs from "node:fs/promises";
-import prisma from "./db.js";
-
-export const registerSubjects = async () => {
-  console.log(`** Crawling data for subjects`);
-  const json = await fs.readFile("./subjects.json", "utf-8");
-  const subjects = JSON.parse(json) as Subject[];
-
-  const uniqueSubjects = new Map<string, Subject>();
-
-  for (const subject of subjects) {
-    if (!uniqueSubjects.has(subject.Emnekode)) {
-      uniqueSubjects.set(subject.Emnekode, subject);
-    }
-  }
-
-  const uniqueSubjectsArray = Array.from(uniqueSubjects.values());
-
-  const existingSubjects = await prisma.subject.findMany({
-    where: {
-      id: {
-        in: uniqueSubjectsArray.map((subject) => subject.Emnekode),
-      },
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  const uniqueAndNotExistingSubjects = uniqueSubjectsArray.filter(
-    (subject) =>
-      !existingSubjects.some((existingSubject) => {
-        return existingSubject.id === subject.Emnekode;
-      }),
-  );
-
-  const prismaArray = uniqueAndNotExistingSubjects.map((subject) => ({
-    id: subject.Emnekode,
-    name: subject.Emnenavn,
-    level: subject.Nivåkode,
-    language: subject["Underv.språk"],
-    studyPoints: parseFloat(subject.Studiepoeng),
-    instituteId: subject.Avdelingskode,
-  }));
-
-  await prisma.subject.createMany({
-    data: prismaArray,
-  });
-};
 
 export async function registerGrades() {
   console.log(`** Crawling data for grades`);
@@ -103,6 +56,8 @@ export async function registerGrades() {
     H: "gradeFail",
   };
 
+  console.log(`Found ${grades.length} grades`);
+
   for (const g of grades) {
     const subjectId = g.Emnekode;
     if (!existingSubjectIds.has(subjectId)) {
@@ -111,7 +66,8 @@ export async function registerGrades() {
 
     const year = parseInt(g.Årstall);
     const semester = parseInt(g.Semester);
-    const gradeChar = g.Karakter;
+    const gradeChar = g.Karakter.trim().toUpperCase();
+
     const totalCount = parseInt(g["Antall kandidater totalt"]) || 0;
 
     const comboKey = `${year}_${semester}`;
@@ -143,6 +99,7 @@ export async function registerGrades() {
 
     grouped[subjectId][comboKey].participantsTotal += totalCount;
   }
+  console.log(`Found ${Object.keys(grouped).length} subjects`);
 
   const flattened: Array<{
     subjectId: string;
@@ -163,6 +120,7 @@ export async function registerGrades() {
       flattened.push(grouped[subjectId][comboKey]);
     }
   }
+  console.log(`Found ${flattened.length} grades`);
 
   function chunkArray<T>(arr: T[], chunkSize: number): T[][] {
     const chunks: T[][] = [];
@@ -185,6 +143,8 @@ export async function registerGrades() {
   >();
 
   const comboChunks = chunkArray(combos, BATCH_SIZE);
+
+  console.log("** Checking existing grades");
 
   for (const chunk of comboChunks) {
     const existing = await prisma.subjectSemesterGrade.findMany({
@@ -210,6 +170,8 @@ export async function registerGrades() {
     participantsTotal: number;
   }> = [];
 
+  console.log("** Checking for new grades");
+
   for (const f of flattened) {
     const key = `${f.subjectId}_${f.year}_${f.semester}`;
     if (!existingMap.has(key)) {
@@ -222,6 +184,8 @@ export async function registerGrades() {
     }
   }
 
+  console.log(`Found ${toCreate.length} new grades to create`);
+
   const createChunks = chunkArray(toCreate, BATCH_SIZE);
   for (const chunk of createChunks) {
     await prisma.subjectSemesterGrade.createMany({
@@ -229,6 +193,8 @@ export async function registerGrades() {
       skipDuplicates: true,
     });
   }
+
+  console.log("Done bulk‐creating grades!");
 
   existingMap.clear();
   for (const chunk of comboChunks) {
@@ -263,6 +229,8 @@ export async function registerGrades() {
     };
   }> = [];
 
+  console.log("** Updating grades");
+  console.log(`Found ${updates.length} grades to update`);
   for (const f of flattened) {
     const key = `${f.subjectId}_${f.year}_${f.semester}`;
     const existing = existingMap.get(key);
@@ -283,6 +251,8 @@ export async function registerGrades() {
     });
   }
 
+  console.log("** Bulk‐registering grades");
+
   const updateChunks = chunkArray(updates, BATCH_SIZE);
   for (const chunk of updateChunks) {
     await Promise.all(
@@ -296,4 +266,5 @@ export async function registerGrades() {
   }
 
   console.log("Done bulk‐registering grades!");
+  await prisma.$disconnect();
 }

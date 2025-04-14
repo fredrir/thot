@@ -1,9 +1,5 @@
 import prisma from "../db/db";
 
-/**
- * Returns a single list of Subject objects (3 per university),
- * with an added `universityId` property on each item.
- */
 export default async function getPopularSubjects() {
   try {
     const universities = await prisma.university.findMany();

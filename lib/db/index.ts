@@ -10,9 +10,10 @@ import {
 
 import { crawlNTNU } from "./ntnu-crawler.js";
 import fetchUniversity from "./registerUniversities.js";
-import { registerGrades, registerSubjects } from "./subjectsAndGrades.js";
+import { registerSubjects } from "./registerSubjects.js";
 import registerUniversities from "./registerUniversities.js";
 import { registerDepartments } from "./registerDepartments.js";
+import { registerGrades } from "./registerGrades.js";
 
 const crawlNtnuAction = async () => {
   await crawlNTNU();

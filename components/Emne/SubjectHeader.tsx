@@ -1,19 +1,25 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface SubjectHeaderProps {
   subject: {
-    id: string
-    name: string
-    language: string
-    level: string
-    studyPoints: number
+    id: string;
+    name: string;
+    language: string;
+    level: string;
+    studyPoints: number;
     department: {
-      name: string
+      name: string;
       university: {
-        name: string
-      }
-    }
-  }
+        name: string;
+      };
+    };
+  };
 }
 
 export function SubjectHeader({ subject }: SubjectHeaderProps) {
@@ -30,19 +36,23 @@ export function SubjectHeader({ subject }: SubjectHeaderProps) {
       <CardContent>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
-            <h3 className="text-sm font-medium text-muted-foreground">Language</h3>
+            <h3 className="text-muted-foreground text-sm font-medium">
+              Language
+            </h3>
             <p className="text-lg font-medium">{subject.language}</p>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-muted-foreground">Level</h3>
+            <h3 className="text-muted-foreground text-sm font-medium">Level</h3>
             <p className="text-lg font-medium">{subject.level}</p>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-muted-foreground">Study Points</h3>
+            <h3 className="text-muted-foreground text-sm font-medium">
+              Study Points
+            </h3>
             <p className="text-lg font-medium">{subject.studyPoints}</p>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

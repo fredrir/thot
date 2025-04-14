@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="no" suppressHydrationWarning>
-      <body className={`${inter.className}  antialiased`}>
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -27,10 +27,8 @@ export default function RootLayout({
         >
           <ThemeProvider />
           <Navbar />
-        
-            
-            {children}
-          
+
+          {children}
         </ThemeProvider>
       </body>
     </html>

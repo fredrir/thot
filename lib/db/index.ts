@@ -7,14 +7,11 @@ import {
   getGradesQuery,
   getSubjectsQuery,
 } from "./client.js";
-import {
-  registerGrades,
-  registerInstitutions,
-  registerSubjects,
-  registerUniversities,
-} from "./crawler.js";
+
 import { crawlNTNU } from "./ntnu-crawler.js";
-import fetchUniversity from "./university.js";
+import fetchUniversity from "./universitiesAndDepartments.js";
+import registerUniversityAndDepartments from "./universitiesAndDepartments.js";
+import { registerGrades, registerSubjects } from "./subjectsAndGrades.js";
 
 const crawlNtnuAction = async () => {
   await crawlNTNU(prisma);
@@ -23,27 +20,27 @@ const crawlNtnuAction = async () => {
 const migrateAction = async () => {
   const file = new URL("../init.sql", import.meta.url).pathname;
   const content = await fs.readFile(file, "utf-8");
-  
+
   // Split the SQL file into individual statements
   // This regex splits on semicolons but ignores those inside quotes or comments
   const statements = content
-    .replace(/^START TRANSACTION;|COMMIT;$/gm, '') // Remove transaction statements
-    .split(';')
-    .map(stmt => stmt.trim())
-    .filter(stmt => stmt.length > 0);
-  
+    .replace(/^START TRANSACTION;|COMMIT;$/gm, "") // Remove transaction statements
+    .split(";")
+    .map((stmt) => stmt.trim())
+    .filter((stmt) => stmt.length > 0);
+
   // Execute each statement individually
   try {
     // Start a transaction manually
     await prisma.$executeRaw`BEGIN`;
-    
+
     for (const statement of statements) {
       await prisma.$executeRawUnsafe(`${statement};`);
     }
-    
+
     // Commit the transaction
     await prisma.$executeRaw`COMMIT`;
-    
+
     console.log("Migration completed successfully");
   } catch (error) {
     // Rollback on error
@@ -61,8 +58,7 @@ const crawlAction = async () => {
 };
 
 const populateAction = async () => {
-  await registerUniversities(prisma);
-  await registerInstitutions(prisma);
+  await registerUniversityAndDepartments(prisma);
   await registerSubjects(prisma);
   await registerGrades(prisma);
 };
@@ -73,7 +69,7 @@ program.command("migrate").action(migrateAction);
 program.command("crawl").action(crawlAction);
 program.command("populate").action(populateAction);
 program.command("crawl-ntnu").action(crawlNtnuAction);
-program.command("university").action(fetchUniversity)
+program.command("university").action(fetchUniversity);
 
 program.command("deploy-prod").action(async () => {
   await migrateAction();

@@ -14,7 +14,7 @@ interface NTNUSubjectMetadata {
 
 function parseCardContentByTitle(
   soup: cheerio.Root,
-  title: string
+  title: string,
 ): Map<string, string> {
   const cardTitle = soup("div.card-header")
     .filter((_, elem) => {
@@ -26,7 +26,7 @@ function parseCardContentByTitle(
   const cardBody = cheerio(factsCard).find("div.card-body");
   const contentText = cheerio(cardBody).text();
 
-  //@ts-expect-error
+  //@ts-expect-error: Named capturing groups are not recognized in some TypeScript configurations
   const searchPattern = /(?<name>\S.*):\s+(?<value>.*)/g;
   const results = [...contentText.matchAll(searchPattern)];
 
@@ -81,7 +81,7 @@ function parseSubjectCardInfo($: cheerio.Root): NTNUSubjectMetadata | null {
         factsCardContent.get("Studienivå") ??
           (() => {
             throw new Error(`Studienivå did not exist`);
-          })()
+          })(),
       )
     : null;
 
@@ -111,13 +111,13 @@ function parseSubjectCardInfo($: cheerio.Root): NTNUSubjectMetadata | null {
 }
 
 async function crawlSubjectMetadata(
-  subjectCode: string
+  subjectCode: string,
 ): Promise<NTNUSubjectMetadata | null> {
   const url = `https://www.ntnu.no/studier/emner/${subjectCode.split("-")[0]}`;
   const response = await axios.get(url);
   if (response.status !== 200)
     throw new Error(
-      `Could not fetch ${url}, got status code ${response.status}`
+      `Could not fetch ${url}, got status code ${response.status}`,
     );
   const $ = cheerio.load(response.data);
   return parseSubjectCardInfo($);

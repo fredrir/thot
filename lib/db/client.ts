@@ -21,7 +21,7 @@ export enum Semester {
 
 const createApiRequest = async (
   outFile: string,
-  query: Record<string, unknown>
+  query: Record<string, unknown>,
 ) => {
   const response = await fetch(apiBaseUrl, {
     method: "POST",
@@ -41,7 +41,7 @@ const createApiRequest = async (
   stream.pipe(
     fs.createWriteStream(outFile, {
       encoding: "utf-8",
-    })
+    }),
   );
   return new Promise((r) => {
     stream.on("end", r);
@@ -91,7 +91,7 @@ type QueryOptions = {
 
 const createQuery = (
   tabelId: number,
-  { sortBy, groupBy, filter }: QueryOptions
+  { sortBy, groupBy, filter }: QueryOptions,
 ) => ({
   tabell_id: tabelId,
   api_versjon: 1,
@@ -110,7 +110,7 @@ const createLevelQueryFilter = () =>
 const createMultipleInstitutionQueryFilter = (institutions: number[]) =>
   createQueryFilter(
     "Institusjonskode",
-    institutions.map((code) => code.toString())
+    institutions.map((code) => code.toString()),
   );
 
 export type Department = {
@@ -138,7 +138,7 @@ export const getDepartmentsQuery = async () =>
         createMultipleInstitutionQueryFilter(institutionCodes),
         createExclusionFilter("Avdelingskode", ["000000"]),
       ],
-    })
+    }),
   );
 
 export type Subject = {
@@ -179,7 +179,7 @@ export const getSubjectsQuery = async () =>
         createLatestQueryFilter("Årstall"),
         createExclusionFilter("Avdelingskode", ["000000"]),
       ],
-    })
+    }),
   );
 
 export type Grade = {
@@ -208,6 +208,6 @@ export const getGradesQuery = async () => {
         createQueryAllFilter("Emnekode"),
         createQueryAllFilter("Semester"),
       ],
-    })
+    }),
   );
 };

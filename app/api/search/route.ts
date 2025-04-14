@@ -16,8 +16,9 @@ export async function GET(request: Request) {
         OR: [
           { id: { contains: query, mode: "insensitive" } },
           { id: { contains: query, mode: "insensitive" } },
-        ], 
-      },include: {
+        ],
+      },
+      include: {
         department: true,
       },
       take: 20,
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
     console.error("Search error:", error);
     return NextResponse.json(
       { error: "Failed to search subjects" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -11,8 +11,10 @@ import {
   registerGrades,
   registerInstitutions,
   registerSubjects,
+  registerUniversities,
 } from "./crawler.js";
 import { crawlNTNU } from "./ntnu-crawler.js";
+import fetchUniversity from "./university.js";
 
 const crawlNtnuAction = async () => {
   await crawlNTNU(prisma);
@@ -59,6 +61,7 @@ const crawlAction = async () => {
 };
 
 const populateAction = async () => {
+  await registerUniversities(prisma);
   await registerInstitutions(prisma);
   await registerSubjects(prisma);
   await registerGrades(prisma);
@@ -70,6 +73,7 @@ program.command("migrate").action(migrateAction);
 program.command("crawl").action(crawlAction);
 program.command("populate").action(populateAction);
 program.command("crawl-ntnu").action(crawlNtnuAction);
+program.command("university").action(fetchUniversity)
 
 program.command("deploy-prod").action(async () => {
   await migrateAction();

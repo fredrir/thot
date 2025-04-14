@@ -4,6 +4,7 @@ import getPopularSubjects from "@/lib/actions/getPopularSubjects";
 export default async function Home() {
   const popularSubjects = await getPopularSubjects();
 
+
   return (
     <div className="space-y-8 mt-4">
       <h1 className="text-4xl font-bold">Thot - Karakterstatestikk</h1>
@@ -17,10 +18,9 @@ export default async function Home() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {popularSubjects.map((subject) => (
           <SubjectCard
-            key={subject.emnekode}
-            emnekode={subject.emnekode}
-            emnenavn={subject.emnenavn}
-            institusjonskode={subject.institusjonskode}
+            key={subject.id}
+            emnekode={subject.id}
+            emnenavn={subject.name}
           />
         ))}
       </div>

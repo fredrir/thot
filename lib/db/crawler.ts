@@ -2,6 +2,51 @@ import { PrismaClient } from "@prisma/client";
 import { Department, Grade, Subject } from "./client.js";
 import fs from "node:fs/promises";
 
+export const registerUniversities = async (db: PrismaClient) => {
+  console.log(`** Registering universities`)
+  const json = await fs.readFile("./departments.json", "utf-8")
+  const institutions = JSON.parse(json) as Department[]
+
+  const universities = new Map<string, { id: string; name: string }>()
+
+  for (const institution of institutions) {
+    if (!universities.has(institution.Institusjonskode)) {
+      universities.set(institution.Institusjonskode, {
+        id: institution.Institusjonskode,
+        name: institution.Institusjonsnavn,
+      })
+    }
+  }
+
+  console.log(`Found ${universities.size} unique universities`)
+
+  for (const [code, university] of universities.entries()) {
+    const existingUniversity = await db.university.findUnique({
+      where: { id: code },
+    })
+
+    if (existingUniversity) {
+      if (existingUniversity.name !== university.name) {
+        await db.university.update({
+          where: { id: code },
+          data: { name: university.name },
+        })
+        console.log(`Updated university: ${university.name}`)
+      } else {
+        console.log(`University already exists: ${university.name}`)
+      }
+    } else {
+      await db.university.create({
+        data: {
+          id: university.id,
+          code: university.id,
+          name: university.name,
+        },
+      })
+      console.log(`Created university: ${university.name}`)
+    }
+  }
+}
 
 const registerLevelTwoInstitution = async (
   institution: Department,
@@ -10,6 +55,16 @@ const registerLevelTwoInstitution = async (
   const match = await db.faculty.findUnique({
     where: { id: institution.Fakultetskode },
   });
+
+  const university = await db.university.findUnique({
+    where: { id: institution.Institusjonskode },
+  })
+
+  if (!university) {
+    throw new Error(
+      `University with ID ${institution.Institusjonskode} not found for faculty ${institution.Fakultetskode}`,
+    )
+  }
 
   if (match !== null) {
     if (match.name !== institution.Fakultetsnavn) {
@@ -25,6 +80,7 @@ const registerLevelTwoInstitution = async (
     data: {
       id: institution.Fakultetskode,
       name: institution.Fakultetsnavn,
+      universityId: institution.Institusjonskode,
     },
   });
 };

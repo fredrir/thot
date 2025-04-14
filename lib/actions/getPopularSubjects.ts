@@ -1,17 +1,17 @@
-import { prisma } from "../db/prisma";
+import { prisma } from "../db/db";
 
 export default async function getPopularSubjects() {
   const numberOfSubjects = 9;
 
   try {
-    const popularSubjects = await prisma.grade.groupBy({
-      by: ["emnekode"],
+    const popularSubjects = await prisma.subjectSemesterGrade.groupBy({
+      by: ["subjectId"],
       _sum: {
-        antallKandidaterTotalt: true,
+        participantsTotal: true,
       },
       orderBy: {
         _sum: {
-          antallKandidaterTotalt: "desc",
+          participantsTotal: "desc",
         },
       },
       take: numberOfSubjects,
@@ -21,21 +21,19 @@ export default async function getPopularSubjects() {
       popularSubjects.map(async (subject) => {
         const subjectDetails = await prisma.subject.findFirst({
           where: {
-            emnekode: subject.emnekode,
+            id: subject.subjectId,
           },
           select: {
-            emnekode: true,
-            emnenavn: true,
-            studiepoeng: true,
-            institusjonsnavn: true,
-            institusjonskode: true,
-            avdelingsnavn: true,
+            id: true,
+            name: true,
+            studyPoints: true,
+
           },
         });
 
         return {
           ...subjectDetails,
-          totalCandidates: subject._sum.antallKandidaterTotalt,
+          totalCandidates: subject._sum.participantsTotal,
         };
       })
     );

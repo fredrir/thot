@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/db";
 import { institutionMap } from "@/lib/utils/institutionMap";
 
 export async function GET(request: Request) {
@@ -14,28 +14,30 @@ export async function GET(request: Request) {
     const subjects = await prisma.subject.findMany({
       where: {
         OR: [
-          { emnekode: { contains: query, mode: "insensitive" } },
-          { emnenavn: { contains: query, mode: "insensitive" } },
+          { id: { contains: query, mode: "insensitive" } },
+          { id: { contains: query, mode: "insensitive" } },
         ],
+      },
+      include: {
+        department: true,
       },
       take: 20,
     });
 
     const formattedSubjects = subjects.map((subject) => {
-      const institutionCode = subject.institusjonskode;
+      const institutionCode = subject.department.universityId;
       const university = institutionMap[
         institutionCode as keyof typeof institutionMap
       ] || {
-        name: subject.institusjonsnavn,
+        name: "Ukjent",
         color: "bg-gray-500",
       };
 
       return {
         id: subject.id,
-        emnekode: subject.emnekode,
-        emnenavn: subject.emnenavn,
+        emnekode: subject.id,
+        emnenavn: subject.name,
         university: university,
-        institutionName: subject.institusjonsnavn,
       };
     });
 
@@ -44,7 +46,7 @@ export async function GET(request: Request) {
     console.error("Search error:", error);
     return NextResponse.json(
       { error: "Failed to search subjects" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

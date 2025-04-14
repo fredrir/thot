@@ -23,12 +23,17 @@ export default async function getPopularSubjects() {
           where: {
             id: subject.subjectId,
           },
-          select: {
-            id: true,
-            name: true,
-            studyPoints: true,
-
-          },
+          include: {
+            department: {
+              include: {
+                faculty: {
+                  include: {
+                    university: true,
+                  },
+                },
+              },
+            },
+          }
         });
 
         return {

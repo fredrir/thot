@@ -21,6 +21,7 @@ export default async function Home() {
             key={subject.id}
             emnekode={subject.id}
             emnenavn={subject.name}
+            institusjonskode={subject.department?.faculty.universityId}
           />
         ))}
       </div>

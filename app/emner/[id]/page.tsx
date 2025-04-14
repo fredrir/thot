@@ -19,15 +19,15 @@ export async function generateMetadata(props: {
   };
 }
 
-export async function generateStaticParams() {
-  const emner = await prisma.subject.findMany({
-    select: { id: true },
-  });
+// export async function generateStaticParams() {
+//   const emner = await prisma.subject.findMany({
+//     select: { id: true },
+//   });
 
-  return emner.map((emne) => ({
-    id: emne.id,
-  }));
-}
+//   return emner.map((emne) => ({
+//     id: emne.id,
+//   }));
+// }
 
 export default async function EmnePage(props: { params: tParams }) {
   const { id } = await props.params;

@@ -111,7 +111,7 @@ export function GradeDistributionChart({ grades, selectedSemester, onSemesterCha
         </Select>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className="">
           {selectedGradeData ? (
             <ChartContainer
               config={{

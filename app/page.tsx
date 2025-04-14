@@ -14,7 +14,7 @@ export default async function Home() {
     <div className="space-y-16 font-mono">
       <section className="relative z-10 flex flex-col items-center px-4 py-20 text-center sm:px-6">
         <div className="absolute inset-0 -z-10 -rotate-1 skew-y-3 transform bg-[#ffde59] dark:bg-[#121212]"></div>
-        <h1 className="max-w-4xl text-4xl font-black tracking-tight text-black [text-shadow:4px_4px_0px_#ffcc80] sm:text-5xl md:text-6xl dark:text-white dark:[text-shadow:4px_4px_0px_#00ff66]">
+        <h1 className="max-w-4xl text-4xl font-black tracking-tight text-black [text-shadow:4px_4px_0px_#ffcc80] sm:text-5xl md:text-6xl dark:text-white dark:[text-shadow:0px_0px_0px_#ffffff]">
           Thot.no - Din komplette studenthub
         </h1>
         <p className="mt-6 max-w-2xl rotate-1 border-4 border-black bg-white px-4 py-2 text-lg font-bold sm:text-xl dark:border-white dark:bg-black">

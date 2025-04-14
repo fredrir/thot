@@ -5,47 +5,97 @@ const prisma = new PrismaClient()
 
 export default async function fetchUniversity() {
   try {
-    const departmentsData = JSON.parse(fs.readFileSync("./departments.json", "utf8"))
 
-    const universities = new Map()
+    interface DepartmentData {
+      Nivå: string;
+      Nivå_tekst: string;
+      Institusjonskode: string;
+      Institusjonsnavn: string;
+      Avdelingskode: string;
+      Avdelingsnavn: string;
+      "Gyldig fra": string;
+      "Gyldig til": string;
+      "fagkode avdeling": string;
+      "fagnavn avdeling": string;
+      Fakultetskode: string;
+      Fakultetsnavn: string;
+      "Avdelingskode (3 siste siffer)": string;
+    }
 
-    departmentsData.forEach((dept: any) => {
-      const uniCode = dept.Institusjonskode
-      const uniName = dept.Institusjonsnavn
 
-      if (!universities.has(uniCode)) {
-        universities.set(uniCode, {
-          id: uniCode,
-          code: uniCode,
-          name: uniName,
+
+    const departmentsData: DepartmentData[] = JSON.parse(fs.readFileSync("./departments.json", "utf8"))
+
+    const universities = [
+      {
+        id: "1110",
+        name: "Universitetet i Oslo",
+        shortName: "UiO",
+      },
+      {
+        id: "1120",
+        name: "Universitetet i Bergen",
+        shortName: "UiB",
+      },
+      {
+        id: "1130",
+        name: "Universitetet i Tromsø - Norges arktiske universitet",
+        shortName: "UiT",
+      },
+      {
+        id: "1150",
+        name: "Norges teknisk-naturvitenskapelige universitet",
+        shortName: "NTNU",
+      },
+      {
+        id: "1160",
+        name: "Universitetet i Stavanger",
+        shortName: "UiS",
+      },{
+        id: "1171",
+        name: "Universitetet i Agder",
+        shortName: "UiA",
+      }
+    ]
+
+    
+
+    universities.forEach(async (university) => {
+      const existingUniversity = await prisma.university.findUnique({
+        where: { id: university.id },
+      })
+      if (!existingUniversity) {
+        await prisma.university.create({
+          data: {
+            id: university.id,
+            name: university.name,
+            shortName: university.shortName,
+          },
         })
+        console.log(`Created university: ${university.name}`)
+      } else {
+        await prisma.university.update({
+          where: { id: university.id },
+          data: {
+            name: university.name,
+            shortName: university.shortName,
+          },
+        })
+        console.log(`Updated university: ${university.name}`)
       }
     })
-
-    console.log(`Found ${universities.size} unique universities`)
-
-    for (const uni of universities.values()) {
-      await prisma.university.upsert({
-        where: { code: uni.code },
-        update: { name: uni.name },
-        create: {
-          id: uni.id,
-          code: uni.code,
-          name: uni.name,
-        },
-      })
-      console.log(`Created/updated university: ${uni.name}`)
-    }
 
 
     const faculties = await prisma.faculty.findMany()
 
-
+    
     const facultyToUniMap = new Map()
 
-    departmentsData.forEach((dept: any) => {
+    departmentsData.forEach((dept: DepartmentData) => {
       const facultyCode = dept.Fakultetskode
       const uniCode = dept.Institusjonskode
+
+      console.log(uniCode)
 
       if (facultyCode && uniCode) {
         facultyToUniMap.set(facultyCode, uniCode)
@@ -64,6 +114,35 @@ export default async function fetchUniversity() {
         console.log(`Updated faculty ${faculty.id} with university ${uniCode}`)
       } else {
         console.log(`Could not find university for faculty ${faculty.id}`)
+      }
+    }
+    
+    const departments = await prisma.department.findMany()
+    const departmentToFacultyMap = new Map()
+    departmentsData.forEach((dept: DepartmentData) => {
+      const facultyCode = dept.Fakultetskode
+      const uniCode = dept.Institusjonskode
+      if (facultyCode && uniCode ) {
+        departmentToFacultyMap.set(uniCode, {
+          facultyCode,
+          uniCode,
+        })
+      }
+    })
+    for (const department of departments) {
+      const departmentCode = department.id
+      const departmentInfo = departmentToFacultyMap.get(departmentCode)
+      if (departmentInfo) {
+        await prisma.department.update({
+          where: { id: department.id },
+          data: {
+            universityId: departmentInfo.uniCode,
+            name: departmentInfo.departmentName,
+          },
+        })
+        console.log(`Updated department ${department.id} with university ${departmentInfo.uniCode}`)
+      } else {
+        console.log(`Could not find university for department ${department.id}`)
       }
     }
 

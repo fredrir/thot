@@ -8,30 +8,31 @@ datasource db {
 }
 
 model University {
-  id        String    @id
-  code      String    @unique
-  name      String
-  faculties Faculty[]
-
-  @@map("universities")
+  id          String       @id
+  name        String
+  shortName   String
+  faculties   Faculty[]
+  departments Department[]
 }
 
 model Faculty {
   id           String       @id
   name         String
-  universityId String
-  university   University   @relation(fields: [universityId], references: [id])
   departments  Department[]
+  University   University   @relation(fields: [universityId], references: [id])
+  universityId String
 
   @@map("faculties")
 }
 
 model Department {
-  id        String    @id
-  facultyId String
-  name      String
-  faculty   Faculty   @relation(fields: [facultyId], references: [id])
-  subjects  Subject[]
+  id           String      @id
+  facultyId    String
+  name         String
+  faculty      Faculty     @relation(fields: [facultyId], references: [id])
+  subjects     Subject[]
+  University   University? @relation(fields: [universityId], references: [id])
+  universityId String?
 
   @@map("departments")
 }

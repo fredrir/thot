@@ -65,18 +65,18 @@ export default async function EmnePage(props: { params: tParams }) {
       : "";
 
   return (
-    <main className="container py-6">
+    <main className="container mx-auto px-4 py-6">
       <SubjectHeader subject={emne} />
 
-      <div className="grid grid-cols-9 gap-8">
-        <div className="col-span-7">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-9">
+        <div className="col-span-1 md:col-span-7">
           <GradeDistributionChart
             grades={filteredGrades}
             initialSemester={initialSemester}
           />
         </div>
 
-        <div className="col-span-2 flex flex-col gap-8">
+        <div className="col-span-1 flex flex-col gap-8 md:col-span-2">
           <GradeStatisticsCards grades={filteredGrades} />
         </div>
       </div>

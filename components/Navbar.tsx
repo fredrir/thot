@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { ThemeToggle } from "./Theme/ThemeToggle";
 import { SearchBar } from "./SearchBar";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/emner", label: "Emner", icon: BookOpen },
@@ -63,7 +64,13 @@ export default function Navbar() {
           >
             <div className="mb-8 flex items-center gap-2">
               <div className="rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 p-2 shadow-md">
-                <GraduationCap className="h-6 w-6 text-white" />
+                <Image
+                  src={"/thot.svg"}
+                  alt="Thot"
+                  width={125}
+                  height={125}
+                  className="h-6 w-6"
+                />
               </div>
               <span className="bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-xl font-bold text-transparent">
                 Thot
@@ -96,7 +103,13 @@ export default function Navbar() {
                 : "bg-amber-600"
             } p-2 shadow-md group-hover:shadow-amber-300/30 dark:group-hover:shadow-amber-700/30`}
           >
-            <GraduationCap className="relative z-10 h-6 w-6 text-white" />
+            <Image
+              src={"/thot.svg"}
+              alt="Thot"
+              width={125}
+              height={125}
+              className="relative z-10 h-6 w-6"
+            />
             <div className="absolute inset-0 translate-y-full bg-gradient-to-r from-amber-400 to-amber-600 transition-transform duration-300 ease-out group-hover:translate-y-0"></div>
           </div>
           <span

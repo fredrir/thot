@@ -23,13 +23,13 @@ export default async function EmnerPage() {
         <Suspense
           fallback={
             <div className="w-full border-x-8 border-b-8 border-black bg-white p-4 md:w-80">
-              Loading filters...
+              Loading...
             </div>
           }
         >
           <SearchFilters universities={universities} />
+          <SubjectList />
         </Suspense>
-        <SubjectList />
       </div>
     </main>
   );

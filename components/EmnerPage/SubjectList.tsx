@@ -74,14 +74,14 @@ export function SubjectList() {
   return (
     <div className="flex-1 p-4">
       <div className="mb-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start justify-between sm:flex-row sm:items-center">
           <h2 className="text-3xl font-black tracking-tight">COURSES</h2>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-col items-start gap-2 sm:w-fit sm:flex-row sm:items-center">
             <span className="font-bold">Sort by:</span>
             <Button
               variant="outline"
               onClick={() => handleSort("name")}
-              className={`rounded-none border-4 border-black font-bold ${
+              className={`w-full rounded-none border-4 border-black font-bold sm:w-fit ${
                 sortBy === "name"
                   ? "bg-yellow-300 hover:bg-yellow-400"
                   : "hover:bg-gray-100"
@@ -98,7 +98,7 @@ export function SubjectList() {
             <Button
               variant="outline"
               onClick={() => handleSort("grade")}
-              className={`rounded-none border-4 border-black font-bold ${
+              className={`w-full rounded-none border-4 border-black font-bold sm:w-fit ${
                 sortBy === "grade"
                   ? "bg-yellow-300 hover:bg-yellow-400"
                   : "hover:bg-gray-100"
@@ -115,7 +115,7 @@ export function SubjectList() {
             <Button
               variant="outline"
               onClick={() => handleSort("points")}
-              className={`rounded-none border-4 border-black font-bold ${
+              className={`w-full rounded-none border-4 border-black font-bold sm:w-fit ${
                 sortBy === "points"
                   ? "bg-yellow-300 hover:bg-yellow-400"
                   : "hover:bg-gray-100"

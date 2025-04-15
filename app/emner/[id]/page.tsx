@@ -1,7 +1,5 @@
-import { GradeDistributionChart } from "@/components/Emne/GradeDistributionChart";
-import { GradeStatisticsCards } from "@/components/Emne/GradeStatisticsCards";
-import { GradeTimelineChart } from "@/components/Emne/GradeTimelineChart";
-import { SubjectHeader } from "@/components/Emne/SubjectHeader";
+import { SearchFilters } from "@/components/EmnerPage/SearchFilters";
+import { SubjectDetail } from "@/components/EmnerPage/SubjectDetail";
 import prisma from "@/lib/db/db";
 import { tParams } from "@/lib/types";
 import type { Metadata } from "next";
@@ -33,56 +31,24 @@ export default async function EmnePage(props: { params: tParams }) {
   const { id } = await props.params;
   const decodedSlug = decodeURIComponent(id);
 
-  const emne = await prisma.subject.findUnique({
-    where: {
-      id: decodedSlug,
-    },
+  const universities = await prisma.university.findMany({
     include: {
-      department: {
-        include: {
-          university: true,
-        },
-      },
-      grades: true,
+      departments: true,
     },
   });
-
-  if (!emne) {
-    return <div>Subject not found</div>;
-  }
-
-  const sortedGrades = [...emne.grades].sort((a, b) => {
-    if (a.year !== b.year) return b.year - a.year;
-    return b.semester - a.semester;
-  });
-
-  const filteredGrades = sortedGrades.filter(
-    (grade) => grade.participantsTotal > 0,
-  );
-  const initialSemester =
-    filteredGrades.length > 0
-      ? `${filteredGrades[0].year}-${filteredGrades[0].semester}`
-      : "";
 
   return (
-    <main className="container mx-auto px-4 py-6">
-      <SubjectHeader subject={emne} />
+    <main className="min-h-screen bg-white">
+      <header className="border-8 border-black bg-yellow-300 p-6">
+        <h1 className="text-5xl font-black tracking-tighter">EMNER DATABASE</h1>
+        <p className="mt-2 text-xl font-bold">
+          Find and compare university courses
+        </p>
+      </header>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-9">
-        <div className="col-span-1 md:col-span-7">
-          <GradeDistributionChart
-            grades={filteredGrades}
-            initialSemester={initialSemester}
-          />
-        </div>
-
-        <div className="col-span-1 grid grid-cols-2 gap-8 md:col-span-2 md:grid-cols-1">
-          <GradeStatisticsCards grades={filteredGrades} />
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <GradeTimelineChart grades={filteredGrades} />
+      <div className="flex flex-col md:flex-row">
+        <SearchFilters universities={universities} />
+        <SubjectDetail subjectId={decodedSlug} href />
       </div>
     </main>
   );

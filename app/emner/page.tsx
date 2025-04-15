@@ -1,6 +1,7 @@
 import { SearchFilters } from "@/components/EmnerPage/SearchFilters";
 import { SubjectList } from "@/components/EmnerPage/SubjectList";
 import prisma from "@/lib/db/db";
+import { Suspense } from "react";
 
 export default async function EmnerPage() {
   const universities = await prisma.university.findMany({
@@ -19,7 +20,15 @@ export default async function EmnerPage() {
       </header>
 
       <div className="flex flex-col md:flex-row">
-        <SearchFilters universities={universities} />
+        <Suspense
+          fallback={
+            <div className="w-full border-x-8 border-b-8 border-black bg-white p-4 md:w-80">
+              Loading filters...
+            </div>
+          }
+        >
+          <SearchFilters universities={universities} />
+        </Suspense>
         <SubjectList />
       </div>
     </main>

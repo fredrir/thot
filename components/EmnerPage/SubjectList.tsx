@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SubjectCard } from "./SubjectCard";
 import type { Subject } from "@/lib/types";
 import getSubjects from "@/lib/actions/getSubjects";
+import Pagination from "./Pagination";
 
 export function SubjectList() {
   const searchParams = useSearchParams();
@@ -154,57 +155,11 @@ export function SubjectList() {
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="mt-8 flex items-center justify-center gap-2">
-              <Button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-                className="rounded-none border-4 border-black font-bold"
-              >
-                <ChevronLeft className="h-5 w-5" />
-                Prev
-              </Button>
-
-              {Array.from({ length: totalPages }).map((_, i) => {
-                if (
-                  totalPages <= 7 ||
-                  i === 0 ||
-                  i === totalPages - 1 ||
-                  (i >= page - 2 && i <= page + 2)
-                ) {
-                  return (
-                    <Button
-                      key={i}
-                      onClick={() => handlePageChange(i + 1)}
-                      variant={page === i + 1 ? "default" : "outline"}
-                      className={`rounded-none border-4 border-black font-bold ${
-                        page === i + 1
-                          ? "bg-yellow-300 text-black hover:bg-yellow-400"
-                          : ""
-                      }`}
-                    >
-                      {i + 1}
-                    </Button>
-                  );
-                } else if (
-                  (i === page - 3 && page > 3) ||
-                  (i === page + 3 && page < totalPages - 3)
-                ) {
-                  return <span key={i}>...</span>;
-                }
-                return null;
-              })}
-
-              <Button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-                className="rounded-none border-4 border-black font-bold"
-              >
-                Next
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
+          <Pagination
+            totalPages={totalPages}
+            initialPage={page}
+            onPageChange={handlePageChange}
+          />
         </>
       )}
     </div>

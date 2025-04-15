@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { SubjectDetail } from "./SubjectDetail";
 import { SubjectCard } from "./SubjectCard";
 import type { Subject } from "@/lib/types";
 import getSubjects from "@/lib/actions/getSubjects";
@@ -15,7 +14,6 @@ export function SubjectList() {
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"name" | "grade" | "points">("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
@@ -72,15 +70,6 @@ export function SubjectList() {
       window.scrollTo(0, 0);
     }
   };
-
-  if (selectedSubject) {
-    return (
-      <SubjectDetail
-        subjectId={selectedSubject}
-        onBack={() => setSelectedSubject(null)}
-      />
-    );
-  }
 
   return (
     <div className="flex-1 p-4">
